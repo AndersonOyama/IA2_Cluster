@@ -1,25 +1,47 @@
 import numpy as np
 import pandas as pd
 import sys
+import math
+import random
 
 from sklearn import svm
-from sklearn.feature_extraction.dict_vectorizer import BaseEstimator
-from sklearn.naive_bayes import BernoulliNB
-
 
 def main():
 
-    treino_entrada = pd.read_csv("../Dataset/wine.csv", ";")
-    dados = pd.read_csv("",';')
-    categorias = ["1", "2", "3"]
-    vetorizador = BaseEstimator(binary = 'true')
-    treino = treino_entrada(treino_entrada, vetorizador)
+    treino_entrada1 = pd.read_csv("../Dataset/winequality-red.csv", ";")
+    treino_entrada2 = pd.read_csv("../Dataset/winequality-white.csv", ";")
+    # print(treino_entrada1.loc[1,:])
+    treinoRed, treinoWhite = gerador_treino(treino_entrada1, treino_entrada2, float(sys.argv[1]))
+    print(treinoRed)
+    categorias = ["red","white"]
 
-def treinamento(dados_treino, vetorizador):
-    treino_vinho = [dados_treino[0] for dados_treino in dados_treino]
 
-    treino_vinho = vetorizador.fit_transform(treino_vinho)
-    return BernoulliNB().fit(treino_vinho)
+def gerador_treino(wine1, wine2, porcentagem):
+    baseRed = []
+    baseWhite = []
+    i = 0
+    while (len(baseRed) < math.ceil(len(wine1)*porcentagem)):
+        if(i > len(wine1)):
+            i = 0
+        if ((randomBool()) == True):
+            baseRed.append(wine1.loc[(i), :])
+            i += 1
+        i += 1
+    i = 0
+    while (len(baseWhite) < math.ceil(len(wine2)*porcentagem)):
+        if(i>len(wine2)):
+            i=0
+        if ((randomBool()) == True):
+            baseWhite.append(wine2.loc[(i), :])
+            i += 1
+        i += 1
+    return (baseRed, baseWhite)
+
+
+def randomBool():
+    random_bit = random.getrandbits(1)
+    random_boolean = bool(random_bit)
+    return(random_boolean)
 
 if __name__ == '__main__':
     main()
