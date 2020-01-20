@@ -5,11 +5,11 @@ import math
 import random
 
 
-from sklearn import svm
+from sklearn.cluster import MeanShift, estimate_bandwidth
 from sklearn.model_selection import train_test_split
-from sklearn import metrics
+from sklearn.metrics import accuracy_score
 from sklearn.utils import shuffle
-from sklearn.datasets.samples_generator import make_blobs
+
 
 from utils import read_data, plot_data, plot_decision_function
 
@@ -18,30 +18,47 @@ import scikitplot as skplt
 
 
 def main():
-    porcentagem = float(sys.argv[1])
+    porcentagem = sys.argv[1]
     redWine = pd.read_csv("../Dataset/winequality-red.csv", ";")
     whiteWine = pd.read_csv("../Dataset/winequality-white.csv", ";")
 
     treino, ans = gerador_treino(redWine, whiteWine)
 
+    plt.scatter(treino.iloc[:,0].values, treino.iloc[:,1].values, label="True position")
+    plt.show()
+
+
+    bandwidth = estimate_bandwidth(treino, quantile=0.2, n_samples=500)
+    ms = MeanShift(bandwidth=bandwidth, bin_seeding=True)
+    ms.fit(treino)
+    labels = ms.labels_
+    cluster_centers = ms.cluster_centers_
+
+    labels_unique = np.unique(labels)
+    n_clusters_ = 2
+
+    print("estimativa de cluster: %d" % n_clusters_)
+
+
     X_train, X_test, y_train, y_test = train_test_split(treino, ans, test_size=porcentagem, random_state=0)
 
 
-    plot_data(X_train, y_train, X_test, y_test, porcentagem)
 
-    clf = svm.SVC(kernel='linear', C=1)
+    clf = KMeans(n_clusters=2)
     clf.fit(X_train, y_train)
+    y_pred = clf.fit_predic(X_test)
+    print("Acuracia: {}".format(accuracy_score(y_test, y_pred)))
 
-    plot_decision_function(X_train, y_train, X_test, y_test, clf)
-    
-    y_pred = clf.predict(X_test)
+
+    # plt.scatter(treino.iloc[:,0].values,treino.iloc[:,1].values, c=kmeans.labels_, cmap='rainbow')
+    # plt.show()
+
 
 
 
     print("Acuracia: ", metrics.accuracy_score(y_test, y_pred))
     print("Recall: ", metrics.recall_score(y_test, y_pred))
 
-    # plot_svc_decision_function(test)
 
 
 
@@ -54,6 +71,7 @@ def gerador_treino(redWine, whiteWine):
     classe = ansRed + ansWhite
     baseTreino, baseClasse = shuffle(base, classe)
     return baseTreino, baseClasse
+
 
 
 
