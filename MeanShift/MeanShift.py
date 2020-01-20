@@ -42,11 +42,16 @@ def main():
     plt.clf()
 
 
-    colors = cycle('bgrcmykbgrcmykbgrcmykbgrcmyk')
+    colors = []
+    for i in range(n_clusters_):
+        r = lambda: random.randint(0,255)
+        color = '#%02X%02X%02X' % (r(),r(),r())
+        if((color not in colors) and (color != '#ffffff')):
+            colors.append(color)
     for k, col in zip(range(n_clusters_), colors):
         my_members = labels == k
         cluster_center = cluster_centers[k]
-        plt.plot(dataset.iloc[my_members, 0].values, dataset.iloc[my_members, 1].values, col + '.')
+        plt.plot(dataset.iloc[my_members, 0].values, dataset.iloc[my_members, 1].values, col, marker='.', linestyle=None, linewidth=0)
         plt.plot(cluster_center[0], cluster_center[1], 'o', markerfacecolor=col,
                 markeredgecolor='k', markersize=14)
     plt.title('Número estimado de cluster: {}\nQuantidade de amostra: {}\nMédia de distancia: {}'.format(n_clusters_,sample, mediumDistance))
