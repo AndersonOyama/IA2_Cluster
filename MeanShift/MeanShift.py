@@ -18,18 +18,19 @@ from itertools import cycle
 
 
 def main():
-    # redWine = pd.read_csv("../Dataset/winequality-red.csv", ";")
-    # whiteWine = pd.read_csv("../Dataset/winequality-white.csv", ";")
-    dataset = pd.read_csv("../Dataset/s1.txt", sep="    ", header=None)
- 
-    # treino, ans = gerador_treino(redWine, whiteWine)
+    localset = "../Dataset/"
+    datasetLocal = localset + sys.argv[1]
+    dataset = pd.read_csv(datasetLocal, sep="    ", header=None)
+    sample = int(sys.argv[2])
+    mediumDistance = float(sys.argv[3])
 
-    plt.scatter(dataset.iloc[:,0].values, dataset.iloc[:,1].values, label="True position")
+    plt.scatter(dataset.iloc[:,0].values, dataset.iloc[:,1].values, label="")
+    plt.title("Grafico de: " + sys.argv[1])
     plt.show()
 
 
 
-    bandwidth = estimate_bandwidth(dataset, quantile=0.05, n_samples=2500)
+    bandwidth = estimate_bandwidth(dataset, quantile=mediumDistance, n_samples=sample)
     ms = MeanShift(bandwidth=bandwidth, bin_seeding=True, cluster_all=True)
     ms.fit(dataset)
     labels = ms.labels_
@@ -44,17 +45,15 @@ def main():
 
 
 
-    # colors = cycle('bgrcmykbgrcmykbgrcmykbgrcmyk')
-
+    colors = cycle('bgrcmykbgrcmykbgrcmykbgrcmyk')
     for k, col in zip(range(n_clusters_), colors):
         my_members = labels == k
         cluster_center = cluster_centers[k]
         plt.plot(dataset.iloc[my_members, 0].values, dataset.iloc[my_members, 1].values, col + '.')
         plt.plot(cluster_center[0], cluster_center[1], 'o', markerfacecolor=col,
                 markeredgecolor='k', markersize=14)
-    plt.title('Estimated number of clusters: %d' % n_clusters_)
+    plt.title('Número estimado de cluster: {}\nQuantidade de amostra: {}\nMédia de distancia: {}'.format(n_clusters_,sample, mediumDistance))
     plt.show()
-
 
 
 
@@ -72,4 +71,8 @@ def gerador_treino(redWine, whiteWine):
 
 
 if __name__ == '__main__':
-    main()
+    if(len(sys.argv) < 4):
+        print("Execução inválida. Exemplo: python3 MeanShift.py nome_do_arquivo_teste quantidade_de_amostra media_de_distancia[0,1]")
+        exit(1)
+    else:
+        main()
