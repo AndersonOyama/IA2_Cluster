@@ -4,11 +4,14 @@ import sys
 import math
 import random
 
+
 from sklearn import svm
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
 from sklearn.utils import shuffle
 from sklearn.datasets.samples_generator import make_blobs
+
+from utils import read_data, plot_data, plot_decision_function
 
 import matplotlib.pyplot as plt
 import scikitplot as skplt
@@ -19,20 +22,26 @@ def main():
     redWine = pd.read_csv("../Dataset/winequality-red.csv", ";")
     whiteWine = pd.read_csv("../Dataset/winequality-white.csv", ";")
 
-    # treinoRed, treinoWhite, testeRed, testeWhite, answerRed, answerWhite,
     treino, ans = gerador_treino(redWine, whiteWine)
 
     X_train, X_test, y_train, y_test = train_test_split(treino, ans, test_size=porcentagem, random_state=0)
 
-    clf = svm.SVC(kernel='linear', gamma=2)
+
+    plot_data(X_train, y_train, X_test, y_test, porcentagem)
+
+    clf = svm.SVC(kernel='linear', C=1)
     clf.fit(X_train, y_train)
+
+    plot_decision_function(X_train, y_train, X_test, y_test, clf)
+    
     y_pred = clf.predict(X_test)
+
+
+
     print("Acuracia: ", metrics.accuracy_score(y_test, y_pred))
     print("Recall: ", metrics.recall_score(y_test, y_pred))
 
-    X, y = make_blobs(n_samples=( int(porcentagem * len(treino))), centers=2, random_state=0, cluster_std=0.60)
-    plt.scatter(X[:, 0], X[:, 1], c=y, s=50, cmap='autumn');
-    plt.show()
+    # plot_svc_decision_function(test)
 
 
 
