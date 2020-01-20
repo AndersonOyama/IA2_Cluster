@@ -29,7 +29,6 @@ def main():
     plt.show()
 
 
-
     bandwidth = estimate_bandwidth(dataset, quantile=mediumDistance, n_samples=sample)
     ms = MeanShift(bandwidth=bandwidth, bin_seeding=True, cluster_all=True)
     ms.fit(dataset)
@@ -39,10 +38,8 @@ def main():
     labels_unique = np.unique(labels)
     n_clusters_ = len(labels_unique)
 
-
     plt.figure(1)
     plt.clf()
-
 
 
     colors = cycle('bgrcmykbgrcmykbgrcmykbgrcmyk')
